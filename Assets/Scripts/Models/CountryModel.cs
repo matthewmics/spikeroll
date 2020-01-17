@@ -7,6 +7,12 @@ using UnityEngine;
 
 public class CountryModel
 {
+    [JsonProperty("is_locked")]
+    public bool IsLocked;
+
+    [JsonProperty("unlock_cost")]
+    public int UnlockCost;
+
     [JsonProperty("name")]
     public string Name;
 
@@ -70,13 +76,15 @@ public class CountryModel
 
     private static void InitializeCountries()
     {
-        if (!PlayerPrefs.HasKey("countries"))
+        if (!PlayerPrefs.HasKey("countries") /*|| true*/)
         {
             List<CountryModel> countryModels = new List<CountryModel>
             {
                 new CountryModel
                 {
                     Name = "Philippines",
+                    IsLocked = false,
+                    UnlockCost = 0,
                     ShortName = "PH",
                     FlagResource = "ph_flag",
                     Intelligence = 75,
@@ -85,28 +93,41 @@ public class CountryModel
                 },
                 new CountryModel
                 {
-                    Name = "Korea",
-                    ShortName = "KOR",
-                    FlagResource = "kor_flag",
-                    Intelligence = 80,
-                    Power = 80,
-                    Speed = 85
-                },
-                new CountryModel
-                {
                     Name = "Japan",
+                    IsLocked = true,
+                    UnlockCost = 200,
                     ShortName = "JPN",
                     FlagResource = "jpn_flag",
                     Intelligence = 85,
                     Power = 80,
                     Speed = 82
+                },
+                new CountryModel
+                {
+                    Name = "Korea",
+                    IsLocked = true,
+                    UnlockCost = 500,
+                    ShortName = "KOR",
+                    FlagResource = "kor_flag",
+                    Intelligence = 80,
+                    Power = 80,
+                    Speed = 85
                 }
             };
 
             string jsonString = JsonConvert.SerializeObject(countryModels);
-            Debug.Log(jsonString);
+            //Debug.Log(jsonString);
             PlayerPrefs.SetString("countries", jsonString);
         }
+    }
+
+
+    public static void OverwriteCountries(List<CountryModel>countryModels)
+    {
+
+        string jsonString = JsonConvert.SerializeObject(countryModels);
+        //Debug.Log(jsonString);
+        PlayerPrefs.SetString("countries", jsonString);
     }
 }
 

@@ -9,10 +9,14 @@ public class PointsDisplay : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        UpdatePoints();
+    }
+    public void UpdatePoints()
+    {
+
         text = GetComponent<Text>();
         text.text = $"Points : {PointsUtil.GetCurrentPoints()}";
     }
-
     // Update is called once per frame
     void Update()
     {
