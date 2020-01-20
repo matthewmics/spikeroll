@@ -19,6 +19,7 @@ public class MainMenuUIFunctions : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+      //  PointsUtil.AddPoints(1000);
         camera = GameObject.FindGameObjectWithTag("MainCamera");
         audioSource = camera.GetComponent<AudioSource>();
 
