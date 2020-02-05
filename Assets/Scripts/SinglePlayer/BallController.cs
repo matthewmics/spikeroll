@@ -239,9 +239,9 @@ public class BallController : MonoBehaviour
             Vector3 pos = playerParent.transform.GetChild(i).transform.GetChild(0).position;
             //Debug.Log(i);
             bool isPlayerTarget = i == 0 && destinationChild == 0;
-            float toRange = (isPlayerTarget) ? 1f: 2.4f;
+            float toRange = (isPlayerTarget) ? 0.4f: 2f;
             float randomX = Random.Range(-toRange, toRange);
-            float randomY = Random.Range((isPlayerTarget) ?0f: -toRange, toRange);
+            float randomY = Random.Range(-toRange, toRange);
             pos.x += randomX;
             pos.y += randomY;
            // Debug.Log(pos.y);

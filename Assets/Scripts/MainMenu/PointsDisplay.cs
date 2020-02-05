@@ -15,7 +15,7 @@ public class PointsDisplay : MonoBehaviour
     {
 
         text = GetComponent<Text>();
-        text.text = $"Points : {PointsUtil.GetCurrentPoints()}";
+        text.text = $"points : {PointsUtil.GetCurrentPoints()}";
     }
     // Update is called once per frame
     void Update()

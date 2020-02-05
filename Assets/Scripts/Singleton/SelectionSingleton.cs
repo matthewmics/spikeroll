@@ -17,6 +17,11 @@
         }
     }
 
+
+    public bool IsMinigame { get; set; }
+
+    public bool IsPractice { get; set; }
+
     public VersusType VersusType { get; set; }
 
     public int NumberOfPlayers { get; set; }

@@ -55,7 +55,7 @@ public class CountryModel
         get
         {
             
-            return (float)Power * 0.08f;
+            return (float)Power * 0.06f;
         }
     }
 
@@ -76,7 +76,7 @@ public class CountryModel
 
     private static void InitializeCountries()
     {
-        if (!PlayerPrefs.HasKey("countries") /*|| true*/)
+        if (!PlayerPrefs.HasKey("countries"))
         {
             List<CountryModel> countryModels = new List<CountryModel>
             {
@@ -95,7 +95,7 @@ public class CountryModel
                 {
                     Name = "Japan",
                     IsLocked = true,
-                    UnlockCost = 200,
+                    UnlockCost = 100,
                     ShortName = "JPN",
                     FlagResource = "jpn_flag",
                     Intelligence = 85,
@@ -106,18 +106,41 @@ public class CountryModel
                 {
                     Name = "Korea",
                     IsLocked = true,
-                    UnlockCost = 500,
+                    UnlockCost = 200,
                     ShortName = "KOR",
                     FlagResource = "kor_flag",
                     Intelligence = 80,
                     Power = 80,
                     Speed = 85
+                },
+                new CountryModel
+                {
+                    Name = "Thailand",
+                    IsLocked = true,
+                    UnlockCost = 200,
+                    ShortName = "TH",
+                    FlagResource = "th_flag",
+                    Intelligence = 75,
+                    Power = 82,
+                    Speed = 83
+                },
+                new CountryModel
+                {
+                    Name = "Malaysia",
+                    IsLocked = true,
+                    UnlockCost = 300,
+                    ShortName = "MY",
+                    FlagResource = "my_flag",
+                    Intelligence = 78,
+                    Power = 86,
+                    Speed = 81
                 }
             };
 
             string jsonString = JsonConvert.SerializeObject(countryModels);
             //Debug.Log(jsonString);
             PlayerPrefs.SetString("countries", jsonString);
+            PlayerPrefs.Save();
         }
     }
 
@@ -128,6 +151,7 @@ public class CountryModel
         string jsonString = JsonConvert.SerializeObject(countryModels);
         //Debug.Log(jsonString);
         PlayerPrefs.SetString("countries", jsonString);
+        PlayerPrefs.Save();
     }
 }
 

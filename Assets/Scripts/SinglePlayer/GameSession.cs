@@ -7,8 +7,8 @@ using UnityEngine.UI;
 public class GameSession : MonoBehaviour
 {
 
-    private const int SCORE_TO_WIN = 1;
-    private const int SCORE_TO_WIN_LAST_SET = 1;
+    private const int SCORE_TO_WIN = 21;
+    private const int SCORE_TO_WIN_LAST_SET = 15;
     private int currentScoreToWin;
     private const int SETS_TO_WIN = 2;
     private const int FINAL_SET = 2;
@@ -45,6 +45,8 @@ public class GameSession : MonoBehaviour
     public SepakCharacters PHComponents;
     public SepakCharacters KORComponents;
     public SepakCharacters JPNComponents;
+    public SepakCharacters MYomponents;
+    public SepakCharacters THComponents;
 
     private SepakCharacters SelectedEnemyTeam;
     private SepakCharacters SelectedPlayerTeam;
@@ -64,6 +66,8 @@ public class GameSession : MonoBehaviour
     GameObject player;
 
     [Header("Other")]
+    public Text TextEndGame;
+    public GameObject ScoreBoard;
     public RectTransform SuperThreshold;
     public GameObject SuperButton;
     public GameObject SuperKickDestination;
@@ -106,6 +110,12 @@ public class GameSession : MonoBehaviour
 
     public void AddScore(int teamIndex)
     {
+
+        if (SelectionSingleton.instance.IsPractice)
+        {
+            return;
+        }
+
         TeamProps t = teams[teamIndex];
         TeamProps to = teams[(teamIndex == 0) ? 1 : 0];
         string sr = "ROUND";
@@ -147,17 +157,37 @@ public class GameSession : MonoBehaviour
 
             if(teamIndex == 1)
             {
-                EarnedPointsUI.SetActive(true);
-                PointsUtil.AddPoints(100);
+                if (!SelectionSingleton.instance.IsMinigame)
+                {
+                    TextEndGame.text = "You've earned <color=\"yellow\">100</color> points";
+                    EarnedPointsUI.SetActive(true);
+                    PointsUtil.AddPoints(100);
+                }
+                else
+                {
+                    TextEndGame.text = "You've earned <color=\"yellow\">5</color> allocation points";
+                    EarnedPointsUI.SetActive(true);
+                    var vsac = VSAllCountriesModel.GetCurrentGame();
+                    vsac.RemainingPoints += 5;
+                    vsac.CurrentLevel = vsac.CurrentLevel < 4 ? vsac.CurrentLevel + 1 : 0 ;
+                    VSAllCountriesModel.SaveInstance(vsac);
+                    //PointsUtil.AddPoints(100);
+                }
             }
         }
 
-        ScoredTeamText.text = $"<color={c}>{t.TeamName}</color> WINS {sr}";
+        ScoredTeamText.text = $"<color={c}>{t.TeamName}</color> WIN {sr}";
         
     }
 
     void Start()
     {
+
+        if (SelectionSingleton.instance.IsPractice)
+        {
+            ScoreBoard.SetActive(false);
+        }
+
         audioSource = GetComponent<AudioSource>();
         sfxVol = AudioUtil.GetSfx();
 
@@ -194,6 +224,16 @@ public class GameSession : MonoBehaviour
             case "KOR":
             SelectedPlayerTeam = KORComponents;
             break;
+            case "MY":
+                SelectedPlayerTeam = MYomponents;
+                break;
+            case "TH":
+                SelectedPlayerTeam = THComponents;
+                break;
+
+            default:
+                SelectedPlayerTeam = MYomponents;
+                break;
         }
 
         switch (SelectionSingleton.instance.OpponentCountry.ShortName)
@@ -207,6 +247,12 @@ public class GameSession : MonoBehaviour
             case "KOR":
             SelectedEnemyTeam = KORComponents;
             break;
+            case "MY":
+                SelectedEnemyTeam = MYomponents;
+                break;
+            case "TH":
+                SelectedEnemyTeam = THComponents;
+                break;
         }
 
         if (dontPlay)
@@ -425,7 +471,14 @@ public class GameSession : MonoBehaviour
 
     public void ReturnToMenu()
     {
-        SceneManager.LoadScene("MainMenu");
+        if (SelectionSingleton.instance.IsMinigame)
+        {
+            SceneManager.LoadScene("VSAllCountries");
+        }
+        else
+        {
+            SceneManager.LoadScene("MainMenu");
+        }
     }
 
     public void PlayKickAudio()

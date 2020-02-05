@@ -7,9 +7,12 @@ using UnityEngine.UI;
 public class MainMenuUIFunctions : MonoBehaviour
 {
     private AudioSource audioSource;
-    private GameObject camera;
+    public GameObject VsPlayerMenu;
+    private GameObject menuCamera;
+    public GameObject HowToPlay;
     public GameObject SettingsPanel;
     public GameObject MainMenuObject;
+    public GameObject VSAllCountriesPanel;
     public GameObject VSObject;
     public Text VSTitle;
 
@@ -20,8 +23,8 @@ public class MainMenuUIFunctions : MonoBehaviour
     void Start()
     {
       //  PointsUtil.AddPoints(1000);
-        camera = GameObject.FindGameObjectWithTag("MainCamera");
-        audioSource = camera.GetComponent<AudioSource>();
+        menuCamera = GameObject.FindGameObjectWithTag("MainCamera");
+        audioSource = menuCamera.GetComponent<AudioSource>();
 
         audioSource.volume = AudioUtil.GetBgm();
 
@@ -53,14 +56,14 @@ public class MainMenuUIFunctions : MonoBehaviour
     }
     public void OpenVSPlayer()
     {
-        VSTitle.text = "vs Player";
-        SelectionSingleton.instance.VersusType = VersusType.PLAYER;
-        OpenVS();
+        MainMenuObject.SetActive(false);
+        VsPlayerMenu.SetActive(true);
     }
 
     private void OpenVS()
     {
-
+        SelectionSingleton.instance.IsPractice = false;
+        SelectionSingleton.instance.IsMinigame = false;
         MainMenuObject.SetActive(false);
         VSObject.SetActive(true);
     }
@@ -83,6 +86,8 @@ public class MainMenuUIFunctions : MonoBehaviour
     public void Select2v2()
     {
         SelectionSingleton i = SelectionSingleton.instance;
+        i.VersusType = VersusType.AI;
+        i.IsPractice = false;
         i.NumberOfPlayers = 2;
         VersusSelected();
     }
@@ -90,15 +95,35 @@ public class MainMenuUIFunctions : MonoBehaviour
     public void Select3v3()
     {
         SelectionSingleton i = SelectionSingleton.instance;
+        i.VersusType = VersusType.AI;
+        i.IsPractice = false;
+        i.NumberOfPlayers = 3;
+        VersusSelected();
+    }
+
+    public void SelectPractice()
+    {
+
+        SelectionSingleton i = SelectionSingleton.instance;
+        i.IsPractice = true;
+        i.IsMinigame = false;
         i.NumberOfPlayers = 3;
         VersusSelected();
     }
 
     public void ReturnToMenu()
     {
-
+        VsPlayerMenu.SetActive(false);
+        VSAllCountriesPanel.SetActive(false);
         MainMenuObject.SetActive(true);
         VSObject.SetActive(false);
+    }
+
+    public void OpenVSAllCOuntries()
+    {
+
+        VSAllCountriesPanel.SetActive(true);
+        MainMenuObject.SetActive(false);
     }
 
     public void BgmToggled()
@@ -109,5 +134,14 @@ public class MainMenuUIFunctions : MonoBehaviour
     public void SfxToggled()
     {
         AudioUtil.SetSfx((SfxToggle.isOn) ? 1f : 0f);
+    }
+
+    public void OpenHowTopPlay()
+    {
+        HowToPlay.SetActive(true);
+    }
+    public void CloseHowTopPlay()
+    {
+        HowToPlay.SetActive(false);
     }
 }

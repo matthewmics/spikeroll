@@ -14,4 +14,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/VSAITeamSelection.unity
     guid: 212b78fad604e9641b78f16861d549b2
+  - enabled: 1
+    path: Assets/Scenes/VSAllCountries.unity
+    guid: d2e15c9d7ff382e4ca38cce228e7d582
+  - enabled: 1
+    path: Assets/Scenes/MPServer.unity
+    guid: 6652f910b2075fc4b90db0162f261342
+  - enabled: 1
+    path: Assets/Scenes/MPClient.unity
+    guid: e4b36542e36496d4d96edd4ebe5fd714
   m_configObjects: {}
