@@ -38,7 +38,7 @@ public class SuperKickDestination : MonoBehaviour
             gameSession.ModifyCharacterMovements(true);
             ball.ShowFireAnimation(true);
             gameSession.PlayIgniteAudio();
-            ball.SetDestinationAndMove(this.gameObject,15f);
+            ball.SetDestinationAndMove(this.gameObject,22f);
             return;
         }
         float movement = speed * Time.deltaTime;

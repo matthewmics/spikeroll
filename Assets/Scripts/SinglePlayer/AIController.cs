@@ -70,7 +70,7 @@ public class AIController : MonoBehaviour
         {
             if (transform.parent.parent.name.Equals("bottom"))
             {
-                gameSession.AddThreshold(thresholdPerKick);
+                gameSession.AddThreshold(StatInt);
             }
             navigator.DoKick();
         }

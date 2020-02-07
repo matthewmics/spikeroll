@@ -45,7 +45,8 @@ public class CountryModel
     {
         get
         {
-            return (float)Intelligence / 2f;
+            int tint = Intelligence - 50;
+            return (float)tint * 2f;
         }
     }
 
@@ -54,8 +55,9 @@ public class CountryModel
     {
         get
         {
-            
-            return (float)Power * 0.06f;
+            int tpower = Power - 50;
+            return (float)tpower * 0.13f;
+           // return (float)Power * 0.06f;
         }
     }
 
@@ -64,7 +66,9 @@ public class CountryModel
     {
         get
         {
-            return (float)Speed * 0.04f;
+            int tspeed = Speed - 50;
+            return (float)tspeed * 0.1f;
+           // return (float)Speed * 0.04f;
         }
     }
 

@@ -39,6 +39,11 @@ public class VSACManager : MonoBehaviour
     }
 
 
+    public void Add5Allocation()
+    {
+        SetPointsText(5);
+    }
+
     public void SaveAllocation()
     {
         AllocationInt.color = Color.white;

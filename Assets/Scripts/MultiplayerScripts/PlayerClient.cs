@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerClient : MonoBehaviour
@@ -49,6 +50,20 @@ public class PlayerClient : MonoBehaviour
         hostId = NetworkTransport.AddHost(topo, 0, null);
     }
 
+
+    public void ReturnToMenu()
+    {
+        Disconnect();
+        SceneManager.LoadScene("MainMenu");
+    }
+    private void Disconnect()
+    {
+        //NetworkTransport.Disconnect(hostId, myConnectionId);
+        NetworkTransport.RemoveHost(hostId);
+    }
+
+
+
     public void Connect()
     {
 
@@ -68,14 +83,14 @@ public class PlayerClient : MonoBehaviour
 
         connectionTime = Time.time;
 
-        isConnected = true;
+        isStarted = true;
     }
     // Start is called before the first frame update
 
     // Update is called once per frame
     void Update()
     {
-        if (!isConnected)
+        if (!isStarted)
         {
             return;
         }
@@ -95,24 +110,30 @@ public class PlayerClient : MonoBehaviour
                 //Debug.Log("gg");
                 break;
             case NetworkEventType.ConnectEvent:
+                isConnected = true;
                 this.myConnectionId = connectionId;
                 ConnectionPanel.SetActive(false);
                 Debug.Log("Player " + connectionId + " has connected");
                 //OnConnect(connectionId);
                 break;
             case NetworkEventType.DataEvent:
-                string msg = Encoding.Unicode.GetString(recBuffer, 0, dataSize);
-                //Debug.Log("Receiving from : " + connectionId + " : " + msg);
-                //Debug.Log(msg);
-                string[] splitData = msg.Split('|');
 
-                //Debug.Log(splitData[1]);
-
-                switch (splitData[0])
+                if (isConnected)
                 {
-                    case "POSITIONUPDATE":
-                        OnPositionUpdate(splitData);
-                    break;
+
+                    string msg = Encoding.Unicode.GetString(recBuffer, 0, dataSize);
+                    //Debug.Log("Receiving from : " + connectionId + " : " + msg);
+                    //Debug.Log(msg);
+                    string[] splitData = msg.Split('|');
+
+                    //Debug.Log(splitData[1]);
+
+                    switch (splitData[0])
+                    {
+                        case "POSITIONUPDATE":
+                            OnPositionUpdate(splitData);
+                            break;
+                    }
                 }
 
                 break;
@@ -130,14 +151,17 @@ public class PlayerClient : MonoBehaviour
 
     public void Send(string message, bool isReliable = false)
     {
+
+
         int channel = (isReliable) ? reliableChannel : unreliableChannel;
         byte[] msg = Encoding.Unicode.GetBytes(message);
 
         NetworkTransport.Send(hostId, myConnectionId, channel,msg, message.Length * sizeof(char), out error);
     }
 
-    public void SendMoveRequest(string name, float x, float y)
-    {
+    public void SendMoveRequest(string name, float x, float y)          
+    {     
+
         string msg = "MOVEREQUEST|" + name + "|" +
             x * -1 + "%" +
             y * -1;
@@ -150,7 +174,9 @@ public class PlayerClient : MonoBehaviour
         Transform objTrans = NetworkObjects.transform.Find(data[1]);
 
         string[] posVals = data[2].Split('%');
-
+        
         objTrans.position = new Vector3(float.Parse(posVals[0]),float.Parse(posVals[1]),float.Parse(posVals[2]));
+
+        objTrans.GetComponent<Animator>()?.SetBool("IsMoving", bool.Parse(data[3]));
     }
 }

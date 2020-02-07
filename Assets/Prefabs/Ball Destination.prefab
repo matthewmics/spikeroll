@@ -154,6 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FlashFire: {fileID: 775076611611376676, guid: 1e14a499642c6224796f9aeb9b04001c,
     type: 3}
+  DestinationIndex: 0
 --- !u!58 &1533102188
 CircleCollider2D:
   m_ObjectHideFlags: 0

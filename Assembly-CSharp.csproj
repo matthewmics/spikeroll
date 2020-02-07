@@ -95,6 +95,7 @@
      <Compile Include="Assets\Scripts\Utilities\AudioUtil.cs" />
      <Compile Include="Assets\Scripts\Utilities\PointsUtil.cs" />
      <Compile Include="Assets\Scripts\Utilities\RandomUtil.cs" />
+     <Compile Include="Assets\Scripts\Utilities\SepakNetworkUtil.cs" />
      <Compile Include="Assets\Shapes2D\Demos\DragCamera.cs" />
      <Compile Include="Assets\Shapes2D\Demos\Flappy Shapes\Bird.cs" />
      <Compile Include="Assets\Shapes2D\Demos\Flappy Shapes\Game.cs" />

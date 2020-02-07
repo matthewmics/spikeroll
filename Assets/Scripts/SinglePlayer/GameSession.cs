@@ -338,8 +338,11 @@ public class GameSession : MonoBehaviour
             else
             {
                 pic.StatSpd = SelectionSingleton.instance.PlayerCountry.RawSpeed;
+                Debug.Log("PLAYER SPEED IS " + SelectionSingleton.instance.PlayerCountry.RawSpeed);
                 pic.StatPow = SelectionSingleton.instance.PlayerCountry.RawPower;
+                Debug.Log("PLAYER POWER IS " + SelectionSingleton.instance.PlayerCountry.RawPower);
                 pic.StatInt = SelectionSingleton.instance.PlayerCountry.RawInt;
+                Debug.Log("PLAYER INT IS " + SelectionSingleton.instance.PlayerCountry.RawInt);
             }
 
             if (i == 0)
@@ -361,7 +364,7 @@ public class GameSession : MonoBehaviour
 
     public void AddThreshold(float amount)
     {
-        float currentAMount = SuperThreshold.rect.height + (Random.Range(5f, amount));
+        float currentAMount = SuperThreshold.rect.height + (Random.Range(amount / 5, amount));
         currentAMount = Mathf.Clamp(currentAMount, 0f, 100f);
         SuperThreshold.sizeDelta = new Vector2(SuperThreshold.rect.width, currentAMount);
         if(currentAMount == 100f)

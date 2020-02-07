@@ -19,6 +19,19 @@ public class MainMenuUIFunctions : MonoBehaviour
     public Toggle BgmToggle;
     public Toggle SfxToggle;
 
+    public PointsDisplay PointsDisplay;
+
+    public void Add25Points()
+    {
+        PointsUtil.AddPoints(25);
+        PointsDisplay.UpdatePoints();
+    }
+    public void Reduce25Points()
+    {
+        PointsUtil.AddPoints(-25);
+        PointsDisplay.UpdatePoints();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -72,6 +85,7 @@ public class MainMenuUIFunctions : MonoBehaviour
     {
 
         SelectionSingleton i = SelectionSingleton.instance;
+        i.IsMinigame = false;
         switch (i.VersusType)
         {
             case VersusType.AI:

@@ -1,8 +1,13 @@
-﻿using System.Collections;
+﻿using Assets.Scripts.Utilities;
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerHost : MonoBehaviour
@@ -19,6 +24,7 @@ public class PlayerHost : MonoBehaviour
     private int clientId;
 
     private bool isStarted = false;
+    private bool isConnected = false;
 
     private byte error;
 
@@ -30,9 +36,13 @@ public class PlayerHost : MonoBehaviour
     public GameObject NetworkObjects;
 
 
+
     // Start is called before the first frame update
     void Start()
     {
+
+        ConnectionPanel.SetActive(true);
+
         NetworkTransport.Init();
         ConnectionConfig cc = new ConnectionConfig();
         reliableChannel = cc.AddChannel(QosType.Reliable);
@@ -41,10 +51,24 @@ public class PlayerHost : MonoBehaviour
 
         HostTopology topo = new HostTopology(cc, MAX_CONNECTION);
 
-        hostId = NetworkTransport.AddHost(topo, port, null);
+        hostId = NetworkTransport.AddHost(topo, port, null); 
+
+        messageText.text = "WAITING FOR OTHER PLAYER. YOUR IP IS " + SepakNetworkUtil.GetLocalIPAddress();
+
 
         isStarted = true;
 
+    }
+
+    public void ReturnToMenu()
+    {
+        Disconnect();
+        SceneManager.LoadScene("MainMenu");
+    }
+
+    private void Disconnect()
+    {
+        NetworkTransport.RemoveHost(hostId);
     }
 
     // Update is called once per frame
@@ -70,22 +94,28 @@ public class PlayerHost : MonoBehaviour
                 //Debug.Log("try");   
                 break;
             case NetworkEventType.ConnectEvent:
+                isConnected = true;
                 clientId = connectionId;
                 Debug.Log("Player " + connectionId + " has connected");
                 ConnectionPanel.SetActive(false);
                 //OnConnect(connectionId);
                 break;
             case NetworkEventType.DataEvent:
-                string msg = Encoding.Unicode.GetString(recBuffer, 0, dataSize);
-                //Debug.Log("Receiving from : " + connectionId + " : " + msg);
-                string[] splitData = msg.Split('|');
 
-                switch (splitData[0])
+                if (isConnected)
                 {
-                    case "MOVEREQUEST":
-                        OnMoveRequest(splitData);
-                    break;
+                    string msg = Encoding.Unicode.GetString(recBuffer, 0, dataSize);
+                    //Debug.Log("Receiving from : " + connectionId + " : " + msg);
+                    string[] splitData = msg.Split('|');
+
+                    switch (splitData[0])
+                    {
+                        case "MOVEREQUEST":
+                            OnMoveRequest(splitData);
+                            break;
+                    }
                 }
+
 
                 break;
             case NetworkEventType.DisconnectEvent:
@@ -107,6 +137,8 @@ public class PlayerHost : MonoBehaviour
         string[] movements = data[2].Split('%');
         ncc.movement.x = float.Parse(movements[0]);
         ncc.movement.y = float.Parse(movements[1]);
+
+        ncc.GetComponent<Animator>()?.SetBool("IsMoving", bool.Parse(data[3]));
     }
 
     public void Send(string message,bool isReliable = false)
@@ -117,14 +149,17 @@ public class PlayerHost : MonoBehaviour
         NetworkTransport.Send(hostId, clientId, channel, msg,message.Length * sizeof(char), out error);
     }
 
-    public void SendPosition(string name, Transform trans)
+    public void SendPosition(string name, Transform trans, bool isMoving)
     {
-        if (!isStarted) return;
 
-        string tosend = "POSITIONUPDATE|" + name + "|" + 
+        string tosend = "POSITIONUPDATE|" + name 
+            + "|" + // TRANSFORM
             trans.position.x * -1 + "%" + 
             trans.position.y * -1 + "%" + 
-            trans.position.z;
+            trans.position.z 
+            + "|" +// IS MOVING ANIMATION
+            isMoving
+            ;
         Send(tosend);
 
         //Debug.Log(tosend);

@@ -15,10 +15,12 @@ public class HostPlayerController : MonoBehaviour
     float _speed = 5f;
     //
     Rigidbody2D rb;
+    Animator animator;
     // Start is called before the first frame update
     void Start()
     {
         server = GameObject.Find("Server").GetComponent<PlayerHost>();
+        animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
     }
 
@@ -29,10 +31,12 @@ public class HostPlayerController : MonoBehaviour
         movement.x = CrossPlatformInputManager.GetAxisRaw("Horizontal");
         movement.y = CrossPlatformInputManager.GetAxisRaw("Vertical");
 
+        animator.SetBool("IsMoving", (movement.x != 0 || movement.y != 0));
+
         if(Time.time > lastTime)
         {
             lastTime = Time.time + 0.05f;
-            server.SendPosition(name, transform);
+            server.SendPosition(name, transform, animator.GetBool("IsMoving"));
         }
     }
 

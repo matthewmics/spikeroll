@@ -23,6 +23,7 @@ public class ClientPlayerControllerr : MonoBehaviour
         movement.x = CrossPlatformInputManager.GetAxisRaw("Horizontal");
         movement.y = CrossPlatformInputManager.GetAxisRaw("Vertical");
 
+
         if(Time.time > lastTime)
         {
             lastTime = Time.time + 0.05f;

@@ -8,6 +8,7 @@ public class NetworkClientController : MonoBehaviour
     [HideInInspector]
     public Vector2 movement;
     Rigidbody2D rb;
+    Animator animator;
     //
     float _speed = 5f;
     //
@@ -15,6 +16,7 @@ public class NetworkClientController : MonoBehaviour
     void Start()
     {
         server = GameObject.Find("Server").GetComponent<PlayerHost>();
+        animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
     }
 
@@ -22,9 +24,11 @@ public class NetworkClientController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        animator.SetBool("IsMoving", (movement.x != 0 || movement.y != 0));
         if(Time.time > lastTime)
         {
-            server.SendPosition(name, transform);
+            server.SendPosition(name, transform, animator.GetBool("IsMoving"));
             lastTime = Time.time + 0.05f;
         }
     }
