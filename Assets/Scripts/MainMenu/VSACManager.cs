@@ -208,7 +208,8 @@ public class VSACManager : MonoBehaviour
             Intelligence = vsacm.AllocatedInt,
             Power = vsacm.AllocatedPower,
             Speed = vsacm.AllocatedSpeed,
-            ShortName = "YOU", Name = "YOU"
+            ShortName = "YOU", Name = "YOU",
+            AnimatorLocation = "Controllers/MY/my"
         };
         SelectionSingleton.instance.NumberOfPlayers = 3;
 

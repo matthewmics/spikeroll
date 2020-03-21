@@ -16,6 +16,11 @@ public class CrossPlatformDynamicJoystick : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        if (Application.isEditor)
+        {
+            return;
+        }
         CrossPlatformInputManager.SetAxis("Vertical", dj.Vertical);
         CrossPlatformInputManager.SetAxis("Horizontal", dj.Horizontal);
     }

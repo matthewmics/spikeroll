@@ -281,3 +281,5 @@ C:\Users\Matthew Miclat\Documents\Unity-Projects\SpikeRoll\obj\Debug\Assembly-CS
 C:\Users\Matthew Miclat\Documents\Unity-Projects\SpikeRoll\obj\Debug\Assembly-CSharp-firstpass.csproj.CopyComplete
 C:\Users\Matthew Miclat\Documents\Unity-Projects\SpikeRoll\obj\Debug\Assembly-CSharp-firstpass.dll
 C:\Users\Matthew Miclat\Documents\Unity-Projects\SpikeRoll\obj\Debug\Assembly-CSharp-firstpass.pdb
+C:\Users\Matthew Miclat\Documents\Unity-Projects\SpikeRoll\Temp\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Matthew Miclat\Documents\Unity-Projects\SpikeRoll\Temp\bin\Debug\Newtonsoft.Json.xml

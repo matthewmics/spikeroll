@@ -28,7 +28,7 @@ public class NetworkClientController : MonoBehaviour
         animator.SetBool("IsMoving", (movement.x != 0 || movement.y != 0));
         if(Time.time > lastTime)
         {
-            server.SendPosition(name, transform, animator.GetBool("IsMoving"));
+            //server.SendPosition(name, transform, animator.GetBool("IsMoving"));
             lastTime = Time.time + 0.05f;
         }
     }

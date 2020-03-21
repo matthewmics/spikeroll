@@ -155,6 +155,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FlashFire: {fileID: 775076611611376676, guid: 1e14a499642c6224796f9aeb9b04001c,
     type: 3}
+  DestinationIndex: 0
 --- !u!58 &5024369507180811663
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -170,7 +171,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.01
+  m_Radius: 0.17
 --- !u!114 &5407290867338351989
 MonoBehaviour:
   m_ObjectHideFlags: 0

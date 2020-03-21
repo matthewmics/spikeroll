@@ -13,6 +13,7 @@ using UnityEngine.UI;
 public class PlayerHost : MonoBehaviour
 {
 
+
     private const int MAX_CONNECTION = 100;
     private int port = 5701;
 
@@ -20,6 +21,7 @@ public class PlayerHost : MonoBehaviour
     private int webHostId;
     private int reliableChannel;
     private int unreliableChannel;
+    private int stateUpdateChannel;
 
     private int clientId;
 
@@ -35,11 +37,12 @@ public class PlayerHost : MonoBehaviour
     public GameObject ConnectionPanel;
     public GameObject NetworkObjects;
 
-
+    public MultiplayerSession MultiplayerSession { get; private set; }
 
     // Start is called before the first frame update
     void Start()
     {
+        MultiplayerSession = GetComponent<MultiplayerSession>();
 
         ConnectionPanel.SetActive(true);
 
@@ -47,6 +50,7 @@ public class PlayerHost : MonoBehaviour
         ConnectionConfig cc = new ConnectionConfig();
         reliableChannel = cc.AddChannel(QosType.Reliable);
         unreliableChannel = cc.AddChannel(QosType.Unreliable);
+        unreliableChannel = cc.AddChannel(QosType.StateUpdate);
         
 
         HostTopology topo = new HostTopology(cc, MAX_CONNECTION);
@@ -113,6 +117,14 @@ public class PlayerHost : MonoBehaviour
                         case "MOVEREQUEST":
                             OnMoveRequest(splitData);
                             break;
+                        case "P2SELECTION":
+                            var hcs = GameObject.FindObjectOfType<HostCountrySelect>();
+                            hcs.SelectPlayer2(splitData[1]);
+                        break;
+
+                        case "CLIENTACTION":
+                            OnClientAction(splitData[1].Split('%'));
+                        break;
                     }
                 }
 
@@ -131,6 +143,17 @@ public class PlayerHost : MonoBehaviour
 
     }
 
+
+    private void OnClientAction(string[] data)
+    {
+        switch (data[0])
+        {
+            case "SELECTCOUNTRY":
+                MultiplayerSession.P2Country = data[1];
+            break;
+        }
+    }
+
     private void OnMoveRequest(string[] data)
     {
         NetworkClientController ncc = NetworkObjects.transform.Find(data[1]).GetComponent<NetworkClientController>();
@@ -138,30 +161,37 @@ public class PlayerHost : MonoBehaviour
         ncc.movement.x = float.Parse(movements[0]);
         ncc.movement.y = float.Parse(movements[1]);
 
-        ncc.GetComponent<Animator>()?.SetBool("IsMoving", bool.Parse(data[3]));
+        //ncc.GetComponent<Animator>()?.SetBool("IsMoving", bool.Parse(data[3]));
     }
 
     public void Send(string message,bool isReliable = false)
     {
-        int channel = (isReliable) ? reliableChannel : unreliableChannel;
+        int channel = (isReliable) ? reliableChannel : stateUpdateChannel;
         byte[] msg = Encoding.Unicode.GetBytes(message);
 
         NetworkTransport.Send(hostId, clientId, channel, msg,message.Length * sizeof(char), out error);
     }
 
-    public void SendPosition(string name, Transform trans, bool isMoving)
+    public void SendPlayer1Selection(string sel)
     {
-
-        string tosend = "POSITIONUPDATE|" + name 
-            + "|" + // TRANSFORM
-            trans.position.x * -1 + "%" + 
-            trans.position.y * -1 + "%" + 
-            trans.position.z 
-            + "|" +// IS MOVING ANIMATION
-            isMoving
-            ;
-        Send(tosend);
-
-        //Debug.Log(tosend);
+        string tosend = "P1SELECTION|"+sel;
+        Send(tosend,true);
     }
+
+    //public void SendPosition(string name, Transform trans, bool isMoving)
+    //{
+
+    //    string tosend = "POSITIONUPDATE|" + name 
+    //        + "|" + // TRANSFORM
+    //        trans.position.x * -1 + "%" + 
+    //        trans.position.y * -1 + "%" + 
+    //        trans.position.z 
+    //        + "|" +// IS MOVING ANIMATION
+    //        isMoving
+    //        ;
+    //    Send(tosend);
+
+
+    //    //Debug.Log(tosend);
+    //}
 }

@@ -22,6 +22,9 @@ public class CountryModel
     [JsonProperty("flag_resx")]
     public string FlagResource;
 
+    [JsonProperty("animator_location")]
+    public string AnimatorLocation;
+
     [JsonProperty("intelligence")]
     public int Intelligence;
 
@@ -30,6 +33,39 @@ public class CountryModel
 
     [JsonProperty("speed")]
     public int Speed;
+
+    [JsonIgnore]
+    public RuntimeAnimatorController ControllerBottom1
+    {
+        get
+        {
+            return Resources.Load<RuntimeAnimatorController>(AnimatorLocation + "btm1");
+        }
+    }
+    [JsonIgnore]
+    public RuntimeAnimatorController ControllerBottom2
+    {
+        get
+        {
+            return Resources.Load<RuntimeAnimatorController>(AnimatorLocation + "btm2");
+        }
+    }
+    [JsonIgnore]
+    public RuntimeAnimatorController ControllerTop1
+    {
+        get
+        {
+            return Resources.Load<RuntimeAnimatorController>(AnimatorLocation + "top1");
+        }
+    }
+    [JsonIgnore]
+    public RuntimeAnimatorController ControllerTop2
+    {
+        get
+        {
+            return Resources.Load<RuntimeAnimatorController>(AnimatorLocation + "top2");
+        }
+    }
 
     [JsonIgnore]
     public Texture Flag
@@ -72,6 +108,20 @@ public class CountryModel
         }
     }
 
+    public static CountryModel GetCountryByShortName(string shortname)
+    {
+        List<CountryModel> countries = GetCountries();
+        foreach(CountryModel country in countries)
+        {
+            if (country.ShortName.Equals(shortname))
+            {
+                return country;
+            }
+        }
+
+        return null;
+    }
+
     public static List<CountryModel> GetCountries()
     {
         InitializeCountries();
@@ -91,6 +141,7 @@ public class CountryModel
                     UnlockCost = 0,
                     ShortName = "PH",
                     FlagResource = "ph_flag",
+                    AnimatorLocation = "Controllers/PH/ph",
                     Intelligence = 75,
                     Power = 85,
                     Speed = 80
@@ -102,6 +153,7 @@ public class CountryModel
                     UnlockCost = 100,
                     ShortName = "JPN",
                     FlagResource = "jpn_flag",
+                    AnimatorLocation = "Controllers/JPN/jpn",
                     Intelligence = 85,
                     Power = 80,
                     Speed = 82
@@ -113,6 +165,7 @@ public class CountryModel
                     UnlockCost = 200,
                     ShortName = "KOR",
                     FlagResource = "kor_flag",
+                    AnimatorLocation = "Controllers/KOR/kor",
                     Intelligence = 80,
                     Power = 80,
                     Speed = 85
@@ -120,10 +173,12 @@ public class CountryModel
                 new CountryModel
                 {
                     Name = "Thailand",
+
                     IsLocked = true,
                     UnlockCost = 200,
                     ShortName = "TH",
                     FlagResource = "th_flag",
+                    AnimatorLocation = "Controllers/TH/th",
                     Intelligence = 75,
                     Power = 82,
                     Speed = 83
@@ -135,6 +190,7 @@ public class CountryModel
                     UnlockCost = 300,
                     ShortName = "MY",
                     FlagResource = "my_flag",
+                    AnimatorLocation = "Controllers/My/my",
                     Intelligence = 78,
                     Power = 86,
                     Speed = 81

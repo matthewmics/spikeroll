@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1452289577979889038}
   - component: {fileID: 917907312205868581}
   - component: {fileID: 6411710221062246485}
-  - component: {fileID: 7373057202585260831}
+  - component: {fileID: 736781527}
   m_Layer: 0
   m_Name: navigator
   m_TagString: Untagged
@@ -29,8 +29,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 917907312205868580}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5701653, y: 1.1953952, z: 1}
+  m_LocalPosition: {x: 0, y: 0.0838, z: 0}
+  m_LocalScale: {x: 0.5701653, y: 0.123038016, z: 1}
   m_Children: []
   m_Father: {fileID: 5160056341052403992}
   m_RootOrder: 1
@@ -175,8 +175,8 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!58 &7373057202585260831
-CircleCollider2D:
+--- !u!61 &736781527
+BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -189,8 +189,18 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
 --- !u!1 &5160056341052403993
 GameObject:
   m_ObjectHideFlags: 0
@@ -293,7 +303,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 3f9de303bf9cd5641860456a1fe501fd, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -336,6 +346,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4152b56e4aa8782438d63421129b6e8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  StatSpd: 0
+  StatPow: 0
+  StatInt: 0
   MainBall: {fileID: 7576348059691278245, guid: 5b35eb8de08dd8b4a8b617fe5c851f46,
     type: 3}
 --- !u!58 &466955881
@@ -351,6 +364,6 @@ CircleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.11}
+  m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.6

@@ -23,6 +23,7 @@ public class PlayerClient : MonoBehaviour
 
     private int reliableChannel;
     private int unreliableChannel;
+    private int stateUpdateChannel;
     private int ourClientId;
 
     private byte error;
@@ -35,8 +36,17 @@ public class PlayerClient : MonoBehaviour
     public GameObject ConnectionPanel;
     public GameObject NetworkObjects;
 
+
+    public CountryModel P1Country = null;
+    public CountryModel P2Country = null;
+
     public void Start()
     {
+
+
+        //QualitySettings.vSyncCount = 0;  // VSync must be disabled
+        //Application.targetFrameRate = 45;
+
         ConnectionPanel.SetActive(true);
 
         NetworkTransport.Init();
@@ -44,6 +54,7 @@ public class PlayerClient : MonoBehaviour
 
         reliableChannel = cc.AddChannel(QosType.Reliable);
         unreliableChannel = cc.AddChannel(QosType.Unreliable);
+        stateUpdateChannel = cc.AddChannel(QosType.StateUpdate);
 
         HostTopology topo = new HostTopology(cc, MAX_CONNECTION);
 
@@ -130,9 +141,21 @@ public class PlayerClient : MonoBehaviour
 
                     switch (splitData[0])
                     {
-                        case "POSITIONUPDATE":
-                            OnPositionUpdate(splitData);
+
+                        case "P1SELECTION":
+                            var hcs = GameObject.FindObjectOfType<ClientCountrySelection>();
+                            hcs.SelectPlayer1(splitData[1]);
                             break;
+
+
+                        case "UPDATESTATE":
+                            //Debug.Log(msg);
+                            OnStateUpdate(splitData);
+                            break;
+
+                        case "HOSTACTION":
+                            OnHostAction(splitData[1].Split('%'));
+                        break;
                     }
                 }
 
@@ -144,39 +167,86 @@ public class PlayerClient : MonoBehaviour
                 break;
 
             case NetworkEventType.BroadcastEvent:
+                break;
+        }
+    }
+
+    
+    private void OnHostAction(string[] data)
+    {
+        switch (data[0])
+        {
+            case "PICKINGSDONE":
+
+                GameObject.Find("Canvas").transform.Find("CountrySelection").gameObject.SetActive(false);
+                P1Country = CountryModel.GetCountryByShortName(data[1]);
+                P2Country = CountryModel.GetCountryByShortName(data[2]);
+                NetworkObjects.transform.Find("player1").GetComponent<Animator>().runtimeAnimatorController =
+                    P1Country.ControllerTop2;
+                NetworkObjects.transform.Find("player2").GetComponent<Animator>().runtimeAnimatorController =
+                    P2Country.ControllerBottom2;
+
+                NetworkObjects.SetActive(true);
 
                 break;
         }
+    }
+
+    private void OnStateUpdate(string[] data)
+    {
+        int count = data.Length;
+        for(int i = 1; i < count; i++)
+        {
+            string[] objdata = data[i].Split('%');
+
+            Transform toupdate = NetworkObjects.transform.Find(objdata[0]);
+            Vector3 newpos = new Vector3(float.Parse(objdata[1]) * -1, float.Parse(objdata[2]) * -1);
+            toupdate.position = newpos;
+
+            Animator nimator = toupdate.GetComponent<Animator>();
+            if(nimator != null)
+            {
+                nimator.SetBool("IsMoving", (objdata[3]).Equals("1"));
+            }
+        }
+
     }
 
     public void Send(string message, bool isReliable = false)
     {
 
 
-        int channel = (isReliable) ? reliableChannel : unreliableChannel;
+        int channel = (isReliable) ? reliableChannel : stateUpdateChannel;
         byte[] msg = Encoding.Unicode.GetBytes(message);
 
         NetworkTransport.Send(hostId, myConnectionId, channel,msg, message.Length * sizeof(char), out error);
     }
 
-    public void SendMoveRequest(string name, float x, float y)          
-    {     
+    public void SendPlayer2Selection(string sel)
+    {
+        string tosend = "P2SELECTION|" + sel;
+
+        Send(tosend, true);
+    }
+
+    public void SendMoveRequest(string name, float x, float y)
+    {
 
         string msg = "MOVEREQUEST|" + name + "|" +
             x * -1 + "%" +
             y * -1;
         Send(msg);
-       // Debug.Log(msg);
+        // Debug.Log(msg);
     }
 
-    private void OnPositionUpdate(string[] data)
-    {
-        Transform objTrans = NetworkObjects.transform.Find(data[1]);
+    //private void OnPositionUpdate(string[] data)
+    //{
+    //    Transform objTrans = NetworkObjects.transform.Find(data[1]);
 
-        string[] posVals = data[2].Split('%');
+    //    string[] posVals = data[2].Split('%');
         
-        objTrans.position = new Vector3(float.Parse(posVals[0]),float.Parse(posVals[1]),float.Parse(posVals[2]));
+    //    objTrans.position = new Vector3(float.Parse(posVals[0]),float.Parse(posVals[1]),float.Parse(posVals[2]));
 
-        objTrans.GetComponent<Animator>()?.SetBool("IsMoving", bool.Parse(data[3]));
-    }
+    //    objTrans.GetComponent<Animator>()?.SetBool("IsMoving", bool.Parse(data[3]));
+    //}
 }

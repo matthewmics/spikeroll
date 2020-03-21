@@ -42,11 +42,7 @@ public class GameSession : MonoBehaviour
         new Vector3(-2.99f, -0.71f)
     };
 
-    public SepakCharacters PHComponents;
-    public SepakCharacters KORComponents;
-    public SepakCharacters JPNComponents;
-    public SepakCharacters MYomponents;
-    public SepakCharacters THComponents;
+    public SepakCharacters CharacterComponents;
 
     private SepakCharacters SelectedEnemyTeam;
     private SepakCharacters SelectedPlayerTeam;
@@ -210,50 +206,23 @@ public class GameSession : MonoBehaviour
         NumberOfPlayers = (DemoPlay) ? 3 : SelectionSingleton.instance.NumberOfPlayers;
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
 
-        PlayerNameUI.text = SelectionSingleton.instance.PlayerCountry.ShortName;
-        EnemyNameUI.text = SelectionSingleton.instance.OpponentCountry.ShortName;
-
-        switch (SelectionSingleton.instance.PlayerCountry.ShortName)
+        if (SelectionSingleton.instance.PlayerCountry.Name.Equals(SelectionSingleton.instance.OpponentCountry.Name))
         {
-            case "PH":
-            SelectedPlayerTeam = PHComponents;
-            break;
-            case "JPN":
-            SelectedPlayerTeam = JPNComponents;
-            break;
-            case "KOR":
-            SelectedPlayerTeam = KORComponents;
-            break;
-            case "MY":
-                SelectedPlayerTeam = MYomponents;
-                break;
-            case "TH":
-                SelectedPlayerTeam = THComponents;
-                break;
 
-            default:
-                SelectedPlayerTeam = MYomponents;
-                break;
+            PlayerNameUI.text = SelectionSingleton.instance.PlayerCountry.Name+"(YOU)";
+            EnemyNameUI.text = SelectionSingleton.instance.OpponentCountry.Name;
+            teams[1].TeamName = PlayerNameUI.text;
+            teams[0].TeamName = EnemyNameUI.text;
+
+        }
+        else
+        {
+            PlayerNameUI.text = SelectionSingleton.instance.PlayerCountry.Name;
+            EnemyNameUI.text = SelectionSingleton.instance.OpponentCountry.Name;
         }
 
-        switch (SelectionSingleton.instance.OpponentCountry.ShortName)
-        {
-            case "PH":
-            SelectedEnemyTeam = PHComponents;
-            break;
-            case "JPN":
-            SelectedEnemyTeam = JPNComponents;
-            break;
-            case "KOR":
-            SelectedEnemyTeam = KORComponents;
-            break;
-            case "MY":
-                SelectedEnemyTeam = MYomponents;
-                break;
-            case "TH":
-                SelectedEnemyTeam = THComponents;
-                break;
-        }
+        SelectedPlayerTeam = CharacterComponents;
+        SelectedEnemyTeam = CharacterComponents;
 
         if (dontPlay)
         {
@@ -305,6 +274,7 @@ public class GameSession : MonoBehaviour
                 topPlayersLocation[i], Quaternion.identity,
                 TopPlayers.transform);
 
+            g.GetComponentInChildren<Animator>().runtimeAnimatorController = SelectionSingleton.instance.OpponentCountry.ControllerTop1;
             AIController aic = g.GetComponentInChildren<AIController>();
             aic.StatSpd = SelectionSingleton.instance.OpponentCountry.RawSpeed;
             aic.StatPow = SelectionSingleton.instance.OpponentCountry.RawPower;
@@ -326,17 +296,21 @@ public class GameSession : MonoBehaviour
                 bottomPlayersLocation[i], Quaternion.identity,
                 BottomPlayers.transform);
 
+            //g.GetComponent<Animator>().runtimeAnimatorController = SelectionSingleton.instance.PlayerCountry.ControllerBottom1;
+
             AIController aic = g.GetComponentInChildren<AIController>();
             PlayerController pic = g.GetComponent<PlayerController>();
 
             if (aic != null)
             {
+                g.GetComponentInChildren<Animator>().runtimeAnimatorController = SelectionSingleton.instance.PlayerCountry.ControllerBottom1;
                 aic.StatSpd = SelectionSingleton.instance.PlayerCountry.RawSpeed;
                 aic.StatPow = SelectionSingleton.instance.PlayerCountry.RawPower;
                 aic.StatInt = SelectionSingleton.instance.PlayerCountry.RawInt;
             }
             else
             {
+                g.GetComponent<Animator>().runtimeAnimatorController = SelectionSingleton.instance.PlayerCountry.ControllerBottom1;
                 pic.StatSpd = SelectionSingleton.instance.PlayerCountry.RawSpeed;
                 Debug.Log("PLAYER SPEED IS " + SelectionSingleton.instance.PlayerCountry.RawSpeed);
                 pic.StatPow = SelectionSingleton.instance.PlayerCountry.RawPower;
