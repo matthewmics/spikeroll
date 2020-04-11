@@ -132,13 +132,14 @@ public class CountryModel
     {
         if (!PlayerPrefs.HasKey("countries"))
         {
+            //PointsUtil.AddPoints(500);
             List<CountryModel> countryModels = new List<CountryModel>
             {
                 new CountryModel
                 {
                     Name = "Philippines",
-                    IsLocked = false,
-                    UnlockCost = 0,
+                    IsLocked = true,
+                    UnlockCost = 500,
                     ShortName = "PH",
                     FlagResource = "ph_flag",
                     AnimatorLocation = "Controllers/PH/ph",
@@ -150,7 +151,7 @@ public class CountryModel
                 {
                     Name = "Japan",
                     IsLocked = true,
-                    UnlockCost = 100,
+                    UnlockCost = 500,
                     ShortName = "JPN",
                     FlagResource = "jpn_flag",
                     AnimatorLocation = "Controllers/JPN/jpn",
@@ -162,7 +163,7 @@ public class CountryModel
                 {
                     Name = "Korea",
                     IsLocked = true,
-                    UnlockCost = 200,
+                    UnlockCost = 500,
                     ShortName = "KOR",
                     FlagResource = "kor_flag",
                     AnimatorLocation = "Controllers/KOR/kor",
@@ -175,7 +176,7 @@ public class CountryModel
                     Name = "Thailand",
 
                     IsLocked = true,
-                    UnlockCost = 200,
+                    UnlockCost = 500,
                     ShortName = "TH",
                     FlagResource = "th_flag",
                     AnimatorLocation = "Controllers/TH/th",
@@ -187,7 +188,7 @@ public class CountryModel
                 {
                     Name = "Malaysia",
                     IsLocked = true,
-                    UnlockCost = 300,
+                    UnlockCost = 500,
                     ShortName = "MY",
                     FlagResource = "my_flag",
                     AnimatorLocation = "Controllers/My/my",

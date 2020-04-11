@@ -56,7 +56,7 @@ public class ClientCountrySelection : MonoBehaviour
                 server.Send(msg, true);
                 Debug.Log("country selected");
                 SelectCountryButton.interactable = false;
-                SelectCountryButton.transform.GetChild(0).GetComponent<Text>().text = "WAITER FOR OTHER PLAYER";
+                SelectCountryButton.transform.GetChild(0).GetComponent<Text>().text = "WAITING FOR OTHER PLAYER";
             }
         });
 

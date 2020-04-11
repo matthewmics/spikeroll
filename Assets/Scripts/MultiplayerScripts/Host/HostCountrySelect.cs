@@ -46,9 +46,12 @@ public class HostCountrySelect : MonoBehaviour
 
         ButtonSelectCountry.onClick.AddListener(() =>
         {
-            server.MultiplayerSession.P1Country = SelectedPlayer1.name;
-            ButtonSelectCountry.interactable = false;
-            ButtonSelectCountry.transform.GetChild(0).GetComponent<Text>().text = "WAITER FOR OTHER PLAYER";
+            if(PlayerHost.MultiplayerSession.P1Country != null)
+            {
+                PlayerHost.MultiplayerSession.P1Country = SelectedPlayer1.name;
+                ButtonSelectCountry.interactable = false;
+                ButtonSelectCountry.transform.GetChild(0).GetComponent<Text>().text = "WAITING FOR OTHER PLAYER";
+            }
         });
     }
 
@@ -70,26 +73,80 @@ public class HostCountrySelect : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(!string.IsNullOrWhiteSpace(server.MultiplayerSession.P1Country) &&
-           !string.IsNullOrWhiteSpace(server.MultiplayerSession.P2Country))
+        if(!string.IsNullOrWhiteSpace(PlayerHost.MultiplayerSession.P1Country) &&
+           !string.IsNullOrWhiteSpace(PlayerHost.MultiplayerSession.P2Country))
         {
             // gameObject.SetActive(false);
             transform.parent.gameObject.SetActive(false);
             Debug.Log("both players ready");
 
-            server.MultiplayerSession.CountryPl = CountryModel.GetCountryByShortName(server.MultiplayerSession.P1Country);
-            server.MultiplayerSession.CountryP2 = CountryModel.GetCountryByShortName(server.MultiplayerSession.P2Country);
+            PlayerHost.MultiplayerSession.CountryPl = CountryModel.GetCountryByShortName(PlayerHost.MultiplayerSession.P1Country);
+            PlayerHost.MultiplayerSession.CountryP2 = CountryModel.GetCountryByShortName(PlayerHost.MultiplayerSession.P2Country);
 
-            server.NetworkObjects.transform.Find("player1").GetComponent<Animator>().runtimeAnimatorController =
-                server.MultiplayerSession.CountryPl.ControllerBottom1;
-            server.NetworkObjects.transform.Find("player2").GetComponent<Animator>().runtimeAnimatorController =
-                server.MultiplayerSession.CountryP2.ControllerTop1;
+            RuntimeAnimatorController player1Controller = PlayerHost.MultiplayerSession.CountryPl.ControllerBottom1;
+            RuntimeAnimatorController player2Controller = PlayerHost.MultiplayerSession.CountryP2.ControllerTop1;
 
-            server.NetworkObjects.SetActive(true);
+            CountryModel p1country = PlayerHost.MultiplayerSession.CountryPl;
+            CountryModel p2country = PlayerHost.MultiplayerSession.CountryP2;
+
+            // server.NetworkObjects.transform.Find("player1").GetComponent<Animator>().runtimeAnimatorController = player1Controller;
+            //server.NetworkObjects.transform.Find("player2").GetComponent<Animator>().runtimeAnimatorController = player2Controller;
+            int count = server.NetworkObjects.transform.childCount;
+            for(int i = 0; i < count; i++)
+            {
+                Transform t = server.NetworkObjects.transform.GetChild(i);
+
+                Animator animator = t.GetComponent<Animator>(); 
+
+                MultiplayerAIController ai = t.GetComponent<MultiplayerAIController>();
+
+                HostPlayerController hplayer = t.GetComponent<HostPlayerController>();
+                NetworkClientController cplayer = t.GetComponent<NetworkClientController>();
 
 
-            server.Send("HOSTACTION|PICKINGSDONE%" + server.MultiplayerSession.P1Country + "%" + server.MultiplayerSession.P2Country
+                if (t.name.Contains("player1"))
+                {
+                    animator.runtimeAnimatorController = player1Controller;
+                    if (ai != null)
+                    {
+                        ai.SetSpeed(p1country.RawSpeed);
+                        ai.SetPower(p1country.RawPower);
+                        ai.SetInt(p1country.RawInt);
+                    }else if(hplayer != null)
+                    {
+                        hplayer.SetSpeed(p1country.RawSpeed);
+                        hplayer.SetPower(p1country.RawPower);
+                        hplayer.SetInt(p1country.RawInt);
+                    }
+
+                }
+                else if (t.name.Contains("player2"))
+                {
+                    animator.runtimeAnimatorController = player2Controller;
+                    if (ai != null)
+                    {
+                        ai.SetSpeed(p2country.RawSpeed);
+                        ai.SetPower(p2country.RawPower);
+                        ai.SetInt(p2country.RawInt);
+                    }
+                    else if (cplayer != null)
+                    {
+                        cplayer.SetSpeed(p2country.RawSpeed);
+                        cplayer.SetPower(p2country.RawPower);
+                        cplayer.SetInt(p2country.RawInt);
+                    }
+
+                }
+            }
+
+            //server.NetworkObjects.SetActive(true);
+
+            server.MultiplayerUIScript.ShowModal("Loading...");
+            server.Send("HOSTACTION|PICKINGSDONE%" + PlayerHost.MultiplayerSession.P1Country + "%" + PlayerHost.MultiplayerSession.P2Country
                 , true);
+
+            ScoreboardUI.Scoreboard.SetPlayer1Name("Player 1" + "(" + PlayerHost.MultiplayerSession.P1Country + ")");
+            ScoreboardUI.Scoreboard.SetPlayer2Name("Player 2" + "(" + PlayerHost.MultiplayerSession.P2Country + ")");
         }
     }
 

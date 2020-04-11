@@ -71,6 +71,7 @@
      <Compile Include="Assets\Scripts\Models\CountryModelWrapper.cs" />
      <Compile Include="Assets\Scripts\Models\VSAllCountriesModel.cs" />
      <Compile Include="Assets\Scripts\MultiplayerScripts\Client\ButtonClientSelection.cs" />
+     <Compile Include="Assets\Scripts\MultiplayerScripts\Client\ClientBall.cs" />
      <Compile Include="Assets\Scripts\MultiplayerScripts\Client\ClientCountrySelection.cs" />
      <Compile Include="Assets\Scripts\MultiplayerScripts\ClientPlayerControllerr.cs" />
      <Compile Include="Assets\Scripts\MultiplayerScripts\Host\ButtonHostCountrySelect.cs" />
@@ -78,10 +79,17 @@
      <Compile Include="Assets\Scripts\MultiplayerScripts\Host\HostPlayerController.cs" />
      <Compile Include="Assets\Scripts\MultiplayerScripts\Host\HostState.cs" />
      <Compile Include="Assets\Scripts\MultiplayerScripts\Host\HostStateUpdater.cs" />
-     <Compile Include="Assets\Scripts\MultiplayerScripts\Host\MultiplayerSession.cs" />
+     <Compile Include="Assets\Scripts\MultiplayerScripts\Host\MultiplayerPrefs.cs" />
+     <Compile Include="Assets\Scripts\MultiplayerScripts\MultiplayerAIController.cs" />
+     <Compile Include="Assets\Scripts\MultiplayerScripts\MultiplayerGameSession.cs" />
+     <Compile Include="Assets\Scripts\MultiplayerScripts\MultiplayerGeneralControl.cs" />
+     <Compile Include="Assets\Scripts\MultiplayerScripts\MultiplayerUIScript.cs" />
      <Compile Include="Assets\Scripts\MultiplayerScripts\NetworkClientController.cs" />
      <Compile Include="Assets\Scripts\MultiplayerScripts\PlayerClient.cs" />
      <Compile Include="Assets\Scripts\MultiplayerScripts\PlayerHost.cs" />
+     <Compile Include="Assets\Scripts\MultiplayerScripts\PlayerKickController.cs" />
+     <Compile Include="Assets\Scripts\MultiplayerScripts\ScoreboardUI.cs" />
+     <Compile Include="Assets\Scripts\MultiplayerScripts\SepakBall.cs" />
      <Compile Include="Assets\Scripts\SinglePlayer\AIController.cs" />
      <Compile Include="Assets\Scripts\SinglePlayer\AICountrySelection.cs" />
      <Compile Include="Assets\Scripts\SinglePlayer\BallController.cs" />
@@ -100,6 +108,7 @@
      <Compile Include="Assets\Scripts\Singleton\MPSelectionSingleton.cs" />
      <Compile Include="Assets\Scripts\Singleton\SelectionSingleton.cs" />
      <Compile Include="Assets\Scripts\Utilities\AudioUtil.cs" />
+     <Compile Include="Assets\Scripts\Utilities\DelayReducer.cs" />
      <Compile Include="Assets\Scripts\Utilities\PointsUtil.cs" />
      <Compile Include="Assets\Scripts\Utilities\RandomUtil.cs" />
      <Compile Include="Assets\Scripts\Utilities\SepakNetworkUtil.cs" />

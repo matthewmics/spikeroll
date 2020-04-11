@@ -24,10 +24,27 @@ public class ClientPlayerControllerr : MonoBehaviour
         movement.y = CrossPlatformInputManager.GetAxisRaw("Vertical");
 
 
-        if(Time.time > lastTime)
+
+        if (CrossPlatformInputManager.GetButtonDown("Jump"))
         {
-            lastTime = Time.time + 0.05f;
+            server.Send("CLIENTACTION|KICK",true);
+        }
+        else if (CrossPlatformInputManager.GetButtonDown("Fire2"))
+        {
+            server.Send("CLIENTACTION|PASS", true);
+        }
+        else if (CrossPlatformInputManager.GetButtonDown("Fire3"))
+        {
+            server.Send("CLIENTACTION|SPECIAL", true);
+        }
+
+
+        if (Time.time > lastTime)
+        {
+            lastTime = Time.time + DelayReducer.REQUESTED_DELAY;
             server.SendMoveRequest(name, movement.x, movement.y);
         }
+
     }
+
 }

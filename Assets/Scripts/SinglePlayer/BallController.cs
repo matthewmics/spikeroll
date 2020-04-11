@@ -14,7 +14,7 @@ public class BallController : MonoBehaviour
     public float ScaleSpeed = 1f;
     private float currentScale;
     private float minScale = 1f;
-    private float maxScale = 4.5f;
+    private float maxScale = 2.7f;
     GameSession gameSession;
 
     private bool isSuperKick = false;

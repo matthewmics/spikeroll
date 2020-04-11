@@ -12,12 +12,12 @@ public class CrossPlatformDynamicJoystick : MonoBehaviour
     {
         dj = GetComponent<DynamicJoystick>();
     }
-
+    public bool TestRun;
     // Update is called once per frame
     void Update()
     {
 
-        if (Application.isEditor)
+        if (Application.isEditor && !TestRun)
         {
             return;
         }

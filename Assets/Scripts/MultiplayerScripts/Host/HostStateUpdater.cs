@@ -9,6 +9,9 @@ public class HostStateUpdater : MonoBehaviour
         
     private float lastTime = 0.0f;
 
+    public GameObject BallBrightFire;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -40,18 +43,32 @@ public class HostStateUpdater : MonoBehaviour
                     }
                 }
 
-                updateMessage += "%" + ismoving + ((i==count-1) ? "" : "|");
+                string order = "0";
+                SpriteRenderer spriteRenderer = obj.GetComponent<SpriteRenderer>();
+                if (spriteRenderer != null)
+                {
+                    order = spriteRenderer.sortingOrder+"";
+                }
 
+                updateMessage += "%" + ismoving + "%" + obj.localScale.x + "%" + order + "|";
 
+                //updateMessage += ((i == count - 1) ? "" : "|");
+
+                
             }
-                //Debug.Log(updateMessage);
+
+            updateMessage += $"p2spc%{PlayerHost.Server.GameSession.Player2SpecialThreshold}|";
+            updateMessage += $"bf%{(BallBrightFire.activeInHierarchy ? "1" : "0")}";
+
+
+              //  Debug.Log(updateMessage);
                 server.Send(updateMessage);
 
 
 
             //Debug.Log(updateMessage);
 
-            lastTime = Time.time + 0.05f;
+            lastTime = Time.time + DelayReducer.REQUESTED_DELAY;
         }
     }
 }

@@ -19,8 +19,10 @@ public static class PointsUtil
     {
         if (!PlayerPrefs.HasKey("points"))
         {
-            PlayerPrefs.SetInt("points", 0);
+            PlayerPrefs.SetInt("points", 500);
         }
+
+
     }
 
 

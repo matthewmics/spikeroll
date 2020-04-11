@@ -11,6 +11,9 @@ public static class GameConstants
     public static readonly float TossSpeed = 3f;
     public static readonly float NormalSpeed = 5.5f;
 
+    public static readonly string ClientAction = "CLIENTACTION|";
+    public static readonly string HostAction = "HOSTACTION|";
+
     static GameConstants()
     {
 

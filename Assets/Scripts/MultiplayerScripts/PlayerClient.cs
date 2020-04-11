@@ -11,13 +11,13 @@ public class PlayerClient : MonoBehaviour
 {
 
 
-    private const int MAX_CONNECTION = 100;
+    private const int MAX_CONNECTION = 1;
     private int port = 5701;
 
     private int hostId;
     private int webHostId;
 
-    private int myConnectionId;
+    private int myConnectionId = -1;
 
     private bool isConnected = false;
 
@@ -34,25 +34,29 @@ public class PlayerClient : MonoBehaviour
     string ipInput = "";
 
     public GameObject ConnectionPanel;
+    public GameObject CountrySelectionPanel;
     public GameObject NetworkObjects;
-
+    public static MultiplayerUIScript NetUI;
+    public MultiplayerUIScript NetUIInstance;
 
     public CountryModel P1Country = null;
     public CountryModel P2Country = null;
 
+    public RectTransform P2SpecialThreshold;
+    public GameObject P2SpecialButton;
+    public GameObject BrightFire;
+
     public void Start()
     {
 
-
-        //QualitySettings.vSyncCount = 0;  // VSync must be disabled
-        //Application.targetFrameRate = 45;
-
+        NetUI = NetUIInstance;
         ConnectionPanel.SetActive(true);
+        NetworkObjects.SetActive(false);
 
         NetworkTransport.Init();
         ConnectionConfig cc = new ConnectionConfig();
 
-        reliableChannel = cc.AddChannel(QosType.Reliable);
+        reliableChannel = cc.AddChannel(QosType.ReliableSequenced);
         unreliableChannel = cc.AddChannel(QosType.Unreliable);
         stateUpdateChannel = cc.AddChannel(QosType.StateUpdate);
 
@@ -101,6 +105,16 @@ public class PlayerClient : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            ConnectionPanel.SetActive(false);
+            NetworkObjects.SetActive(true);
+        }
+
+
+
         if (!isStarted)
         {
             return;
@@ -121,10 +135,21 @@ public class PlayerClient : MonoBehaviour
                 //Debug.Log("gg");
                 break;
             case NetworkEventType.ConnectEvent:
-                isConnected = true;
-                this.myConnectionId = connectionId;
-                ConnectionPanel.SetActive(false);
-                Debug.Log("Player " + connectionId + " has connected");
+
+                Debug.Log("connect event");
+                if(myConnectionId == -1)
+                {
+
+                    isConnected = true;
+                    this.myConnectionId = connectionId;
+                    ConnectionPanel.SetActive(false);
+                    CountrySelectionPanel.SetActive(true);
+                    Debug.Log("Player " + connectionId + " has connected");
+
+                    string tosend = $"{GameConstants.ClientAction}DELAY%{DelayReducer.DELAY_VALUE}";
+                    Send(tosend,true);
+
+                }
                 //OnConnect(connectionId);
                 break;
             case NetworkEventType.DataEvent:
@@ -150,11 +175,23 @@ public class PlayerClient : MonoBehaviour
 
                         case "UPDATESTATE":
                             //Debug.Log(msg);
+                            //Debug.Log(splitData[1]);
                             OnStateUpdate(splitData);
                             break;
 
                         case "HOSTACTION":
                             OnHostAction(splitData[1].Split('%'));
+                        break;
+
+                        case "ANIMATIONTRIGGER":
+                            //ClientBall.RotateToDest();
+                            string[] triggerData = splitData[1].Split('%');
+                            NetworkObjects.transform.Find(triggerData[0]).GetComponent<Animator>().
+                                SetTrigger(triggerData[1]);
+                        break;
+
+                        case "UPDATESCOREBOARD":
+                            ScoreboardUI.Scoreboard.UpdateClient(splitData[1].Split('%'));
                         break;
                     }
                 }
@@ -163,6 +200,10 @@ public class PlayerClient : MonoBehaviour
             case NetworkEventType.DisconnectEvent:
 
                 Debug.Log("Player " + connectionId + " has disconnected");
+                if(connectionId == myConnectionId)
+                {
+                    NetUI.CloseModal();
+                }
                 //OnDisconnection(connectionId);
                 break;
 
@@ -181,15 +222,62 @@ public class PlayerClient : MonoBehaviour
                 GameObject.Find("Canvas").transform.Find("CountrySelection").gameObject.SetActive(false);
                 P1Country = CountryModel.GetCountryByShortName(data[1]);
                 P2Country = CountryModel.GetCountryByShortName(data[2]);
-                NetworkObjects.transform.Find("player1").GetComponent<Animator>().runtimeAnimatorController =
-                    P1Country.ControllerTop2;
-                NetworkObjects.transform.Find("player2").GetComponent<Animator>().runtimeAnimatorController =
-                    P2Country.ControllerBottom2;
+
+                RuntimeAnimatorController player1Controller = P1Country.ControllerTop2;
+                RuntimeAnimatorController player2Controller = P2Country.ControllerBottom2;
+
+                //  NetworkObjects.transform.Find("player1").GetComponent<Animator>().runtimeAnimatorController = player1Controller;
+                // NetworkObjects.transform.Find("player2").GetComponent<Animator>().runtimeAnimatorController = player2Controller;
+
+                int count = NetworkObjects.transform.childCount;
+                for(int i = 0; i < count; i++)
+                {
+                    Transform t = NetworkObjects.transform.GetChild(i);
+
+                    Animator animator = t.GetComponent<Animator>();
+
+                    if (t.name.Contains("player1"))
+                    {
+                        animator.runtimeAnimatorController = player1Controller;
+                    }else if (t.name.Contains("player2"))
+                    {
+
+                        animator.runtimeAnimatorController = player2Controller;
+                    }
+                }
+
+
+                ScoreboardUI.Scoreboard.SetPlayer1Name("Player 1" + "(" + data[1] + ")");
+                ScoreboardUI.Scoreboard.SetPlayer2Name("Player 2" + "(" + data[2] + ")");
 
                 NetworkObjects.SetActive(true);
+                NetUI.ShowModal("Loading...");
 
+                Invoke("ReadyToPlay", 3f);
+                break;
+            case "SHOWMODAL":
+                NetUI.ShowModal(data[1]);
+                break;
+            case "CLOSEMODAL":
+                NetUI.CloseModal();
+                break;
+            case "YOUWON":
+                NetUI.OpenModalWin();
+                break;
+            case "YOULOSE":
+                NetUI.OpenModalLose();
+                break;
+            case "DELAY":
+                DelayReducer.REQUESTED_DELAY = float.Parse(data[1]);
+                Debug.Log("requested delay is set to " + data[1] + "ms");
                 break;
         }
+    }
+
+    private void ReadyToPlay()
+    {
+        NetUI.CloseModal();
+        Send(GameConstants.ClientAction+"READYTOPLAY",true);
     }
 
     private void OnStateUpdate(string[] data)
@@ -199,7 +287,32 @@ public class PlayerClient : MonoBehaviour
         {
             string[] objdata = data[i].Split('%');
 
+            if (objdata[0].Equals("p2spc"))
+            {
+                float spc = float.Parse(objdata[1]);
+                P2SpecialThreshold.sizeDelta = new Vector2(P2SpecialThreshold.rect.width, spc);
+                if (spc == 100f)
+                {
+                    P2SpecialButton.SetActive(true);
+                }
+                else
+                {
+                    P2SpecialButton.SetActive(false);
+                }
+                continue;
+            }else if (objdata[0].Equals("bf"))
+            {
+                BrightFire.SetActive((objdata[1].Equals("1")));
+                continue;
+            }
+
+
+
             Transform toupdate = NetworkObjects.transform.Find(objdata[0]);
+
+
+
+
             Vector3 newpos = new Vector3(float.Parse(objdata[1]) * -1, float.Parse(objdata[2]) * -1);
             toupdate.position = newpos;
 
@@ -207,6 +320,16 @@ public class PlayerClient : MonoBehaviour
             if(nimator != null)
             {
                 nimator.SetBool("IsMoving", (objdata[3]).Equals("1"));
+            }
+
+            if (toupdate.name.Equals("ball"))
+            {
+                
+                float scale = float.Parse(objdata[4]);
+                toupdate.localScale = new Vector3(scale, scale);
+            }else if (toupdate.name.Equals("destination"))
+            {
+                toupdate.GetComponent<SpriteRenderer>().sortingOrder = int.Parse(objdata[5]);
             }
         }
 

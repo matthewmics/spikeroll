@@ -14,7 +14,7 @@ public class PlayerHost : MonoBehaviour
 {
 
 
-    private const int MAX_CONNECTION = 100;
+    private const int MAX_CONNECTION = 1;
     private int port = 5701;
 
     private int hostId;
@@ -23,36 +23,49 @@ public class PlayerHost : MonoBehaviour
     private int unreliableChannel;
     private int stateUpdateChannel;
 
-    private int clientId;
+    private int clientId = -1;
 
     private bool isStarted = false;
     private bool isConnected = false;
 
     private byte error;
 
-    private float lastUpdateMovement;
-    private float updateMovementRate = 0.05f;
 
     public Text messageText;
     public GameObject ConnectionPanel;
     public GameObject NetworkObjects;
+    public GameObject CountrySelectionPanel;
+    public NetworkClientController NCC;
 
-    public MultiplayerSession MultiplayerSession { get; private set; }
+    public MultiplayerUIScript MultiplayerUIScript;
+
+    public static MultiplayerUIScript NetUI;
+
+    [HideInInspector]
+    public MultiplayerGameSession GameSession;
+
+    public static MultiplayerPrefs MultiplayerSession { get; private set; }
+    public static MultiplayerGeneralControl GeneralControl;
+    public static PlayerHost Server;
 
     // Start is called before the first frame update
     void Start()
     {
-        MultiplayerSession = GetComponent<MultiplayerSession>();
+        NetUI = MultiplayerUIScript;
+        Server = this;
+        GameSession = new MultiplayerGameSession();
+        GeneralControl = NetworkObjects.GetComponent<MultiplayerGeneralControl>();
+        MultiplayerSession = GetComponent<MultiplayerPrefs>();
 
+        NetworkObjects.SetActive(false);
         ConnectionPanel.SetActive(true);
 
         NetworkTransport.Init();
         ConnectionConfig cc = new ConnectionConfig();
-        reliableChannel = cc.AddChannel(QosType.Reliable);
+        reliableChannel = cc.AddChannel(QosType.ReliableSequenced);
         unreliableChannel = cc.AddChannel(QosType.Unreliable);
-        unreliableChannel = cc.AddChannel(QosType.StateUpdate);
+        stateUpdateChannel = cc.AddChannel(QosType.StateUpdate);
         
-
         HostTopology topo = new HostTopology(cc, MAX_CONNECTION);
 
         hostId = NetworkTransport.AddHost(topo, port, null); 
@@ -78,6 +91,13 @@ public class PlayerHost : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            ConnectionPanel.SetActive(false);
+            NetworkObjects.SetActive(true);
+        }
+
         if (!isStarted)
         {
             return;
@@ -96,12 +116,20 @@ public class PlayerHost : MonoBehaviour
         {
             case NetworkEventType.Nothing:
                 //Debug.Log("try");   
-                break;
+                break;  
             case NetworkEventType.ConnectEvent:
-                isConnected = true;
-                clientId = connectionId;
-                Debug.Log("Player " + connectionId + " has connected");
-                ConnectionPanel.SetActive(false);
+
+                if(clientId == -1)
+                {
+                    isConnected = true;
+                    clientId = connectionId;
+                    Debug.Log("Player " + connectionId + " has connected");
+                    CountrySelectionPanel.SetActive(true);
+                    ConnectionPanel.SetActive(false);
+
+                    string tosend = $"{GameConstants.HostAction}DELAY%{DelayReducer.DELAY_VALUE}";
+                    Send(tosend, true);
+                }
                 //OnConnect(connectionId);
                 break;
             case NetworkEventType.DataEvent:
@@ -151,15 +179,41 @@ public class PlayerHost : MonoBehaviour
             case "SELECTCOUNTRY":
                 MultiplayerSession.P2Country = data[1];
             break;
+            case "KICK":
+                NCC.DoKick();
+            break;
+            case "PASS":
+                NCC.DoPass();
+            break;
+            case "SPECIAL":
+                NCC.DoSpecial();
+            break;
+            case "READYTOPLAY":
+                NetworkObjects.SetActive(true);
+                MultiplayerUIScript.CloseModal();
+                Invoke("StartRound",1f);
+            break;
+            case "DELAY":
+                DelayReducer.REQUESTED_DELAY = float.Parse(data[1]);
+                Debug.Log("requested delay is set to " + data[1] + "ms");
+            break;
         }
+    }
+
+    private void StartRound()
+    {
+
+        GeneralControl.StartRound();
     }
 
     private void OnMoveRequest(string[] data)
     {
-        NetworkClientController ncc = NetworkObjects.transform.Find(data[1]).GetComponent<NetworkClientController>();
+      //  Debug.Log(data[2]);
+      //  Debug.Log(data[1]);
+       // NetworkClientController ncc = NetworkObjects.transform.Find(data[1]).GetComponent<NetworkClientController>();
         string[] movements = data[2].Split('%');
-        ncc.movement.x = float.Parse(movements[0]);
-        ncc.movement.y = float.Parse(movements[1]);
+        NCC.movement.x = float.Parse(movements[0]);
+        NCC.movement.y = float.Parse(movements[1]);
 
         //ncc.GetComponent<Animator>()?.SetBool("IsMoving", bool.Parse(data[3]));
     }
