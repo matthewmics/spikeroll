@@ -107,6 +107,13 @@ public class GameSession : MonoBehaviour
     public void AddScore(int teamIndex)
     {
 
+        var sd = GameObject.FindObjectsOfType<SuperKickDestination>();
+
+        foreach(var i in sd)
+        {
+            Destroy(i.gameObject);
+        }
+
         if (SelectionSingleton.instance.IsPractice)
         {
             return;

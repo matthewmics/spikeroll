@@ -7,7 +7,7 @@ public class MultiplayerGameSession
 
     public string Winner { get; set; } = null;
 
-    public int NumberOfPlayers { get; set; } = 3;
+    public static int NumberOfPlayers { get; set; } = 3;
 
 
     public int Player1Score { get; set; } = 0;
@@ -24,8 +24,8 @@ public class MultiplayerGameSession
     public bool IsPlayer1Serve { get; set; } = true;
     public int TotalSet { get; set; } = 3;
     public int CurrentSet { get; set; } = 0;
-    public int ScoreToWin { get; set; } = 3;
-    public int ScoreToWinLastSet { get; set; } = 5;
+    public int ScoreToWin { get; set; } = 21;
+    public int ScoreToWinLastSet { get; set; } = 15;
 
     private float player1Special = 0;
     public float Player1SpecialThreshold 

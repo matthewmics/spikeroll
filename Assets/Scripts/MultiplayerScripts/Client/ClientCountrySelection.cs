@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,9 +16,12 @@ public class ClientCountrySelection : MonoBehaviour
     public ButtonClientSelection SelectedPlayer1 = null;
     [HideInInspector]
     public ButtonClientSelection SelectedPlayer2 = null;
+
+    public static ClientCountrySelection Instance = null;
     // Start is called before the first frame update
     void Start()
     {
+        Instance = this;
         server = GameObject.Find("Server").GetComponent<PlayerClient>();
 
 
@@ -54,12 +58,23 @@ public class ClientCountrySelection : MonoBehaviour
             {
                 string msg = "CLIENTACTION|SELECTCOUNTRY%" + SelectedPlayer2.name;
                 server.Send(msg, true);
-                Debug.Log("country selected");
-                SelectCountryButton.interactable = false;
-                SelectCountryButton.transform.GetChild(0).GetComponent<Text>().text = "WAITING FOR OTHER PLAYER";
+                //Debug.Log("country selected");
+                //SelectCountryButton.interactable = false;
+                //SelectCountryButton.transform.GetChild(0).GetComponent<Text>().text = "WAITING FOR OTHER PLAYER";
             }
         });
 
+    }
+
+    public void HideCountry(string country, bool isMe = false)
+    {
+        this.transform.Find(country).gameObject.SetActive(false);
+
+        if (isMe)
+        {
+            SelectCountryButton.interactable = false;
+            SelectCountryButton.transform.GetChild(0).GetComponent<Text>().text = "WAITING FOR OTHER PLAYER";
+        }
     }
 
     public void SelectPlayer1(string sel)

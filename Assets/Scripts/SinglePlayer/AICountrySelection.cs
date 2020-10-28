@@ -91,7 +91,10 @@ public class AICountrySelection : MonoBehaviour
         user.SpeedText.text = m.Speed.ToString();
         user.LockedPanel.SetActive(m.IsLocked);
 
-        if(user.User.Equals("Player"))
+        if (!user.User.Equals("Player"))
+            user.LockedPanel.SetActive(false);
+
+        if (user.User.Equals("Player"))
         UnlockText.text = $"Unlock for {m.UnlockCost}";
 
         if(countries[PlayerSelectedIndex].IsLocked ||
@@ -103,6 +106,8 @@ public class AICountrySelection : MonoBehaviour
         {
             playButton.SetActive(true);
         }
+
+        playButton.SetActive(PlayerSelectedIndex != OpponentSelectedIndex);
     }
 
     // Update is called once per frame

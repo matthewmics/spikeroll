@@ -75,6 +75,13 @@ public class PlayerHost : MonoBehaviour
 
         isStarted = true;
 
+
+        if(MultiplayerGameSession.NumberOfPlayers == 2)
+        {
+            Destroy(NetworkObjects.transform.Find("player1ai1").gameObject);
+            Destroy(NetworkObjects.transform.Find("player2ai1").gameObject);
+        }
+
     }
 
     public void ReturnToMenu()
@@ -127,7 +134,7 @@ public class PlayerHost : MonoBehaviour
                     CountrySelectionPanel.SetActive(true);
                     ConnectionPanel.SetActive(false);
 
-                    string tosend = $"{GameConstants.HostAction}DELAY%{DelayReducer.DELAY_VALUE}";
+                    string tosend = $"{GameConstants.HostAction}DELAY%{DelayReducer.DELAY_VALUE}%{MultiplayerGameSession.NumberOfPlayers}";
                     Send(tosend, true);
                 }
                 //OnConnect(connectionId);
@@ -177,7 +184,8 @@ public class PlayerHost : MonoBehaviour
         switch (data[0])
         {
             case "SELECTCOUNTRY":
-                MultiplayerSession.P2Country = data[1];
+                //MultiplayerSession.P2Country = data[1];
+                HostCountrySelect.Instance.LockInPlayer2();
             break;
             case "KICK":
                 NCC.DoKick();

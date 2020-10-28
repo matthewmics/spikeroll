@@ -11,7 +11,7 @@ public class GlobalUIScript : MonoBehaviour
 
     public enum ButtonFunctions
     {
-        RETURN_TO_MENU, OPEN_SCENE
+        RETURN_TO_MENU, OPEN_SCENE, HOST2V2, HOST3V3
     }
 
     public ButtonFunctions ButtonFunction;
@@ -33,6 +33,20 @@ public class GlobalUIScript : MonoBehaviour
             case ButtonFunctions.OPEN_SCENE:
                 btn.onClick.AddListener(() =>
                 {
+                    SceneManager.LoadScene(SceneToOpen);
+                });
+                break;
+            case ButtonFunctions.HOST3V3:
+                btn.onClick.AddListener(() =>
+                {
+                    MultiplayerGameSession.NumberOfPlayers = 3;
+                    SceneManager.LoadScene(SceneToOpen);
+                });
+                break;
+            case ButtonFunctions.HOST2V2:
+                btn.onClick.AddListener(() =>
+                {
+                    MultiplayerGameSession.NumberOfPlayers = 2;
                     SceneManager.LoadScene(SceneToOpen);
                 });
                 break;

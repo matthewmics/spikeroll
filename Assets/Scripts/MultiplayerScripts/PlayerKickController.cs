@@ -128,7 +128,7 @@ public class PlayerKickController : MonoBehaviour
                 sepakBall.SetSpecial(true);
             }
 
-            int randIndex = Random.Range(0,PlayerHost.Server.GameSession.NumberOfPlayers - 1);
+            int randIndex = Random.Range(0,MultiplayerGameSession.NumberOfPlayers - 1);
 
             List<Transform> receivers = new List<Transform>();
 

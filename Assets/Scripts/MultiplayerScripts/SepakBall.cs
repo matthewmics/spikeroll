@@ -41,6 +41,12 @@ public class SepakBall : MonoBehaviour
         server = GameObject.Find("Server").GetComponent<PlayerHost>();
         rb = GetComponent<Rigidbody2D>();
         _initialScale = 1;
+
+        if(MultiplayerGameSession.NumberOfPlayers == 2)
+        {
+            TopPlayers.RemoveAt(1);
+            BottomPlayers.RemoveAt(1);
+        }
     }
 
     public void SetBallDead(bool isDead = true)

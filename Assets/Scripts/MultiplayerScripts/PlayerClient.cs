@@ -172,6 +172,13 @@ public class PlayerClient : MonoBehaviour
                             hcs.SelectPlayer1(splitData[1]);
                             break;
 
+                        case "P1LOCKIN":
+                            ClientCountrySelection.Instance.HideCountry(splitData[1]);
+                            break;
+                        case "P2LOCKIN":
+                            ClientCountrySelection.Instance.HideCountry(splitData[1], true);
+                            break;
+
 
                         case "UPDATESTATE":
                             //Debug.Log(msg);
@@ -269,6 +276,13 @@ public class PlayerClient : MonoBehaviour
                 break;
             case "DELAY":
                 DelayReducer.REQUESTED_DELAY = float.Parse(data[1]);
+
+                if (int.Parse(data[2]) == 2)
+                {
+                    Destroy(NetworkObjects.transform.Find("player1ai1").gameObject);
+                    Destroy(NetworkObjects.transform.Find("player2ai1").gameObject);
+                }
+
                 Debug.Log("requested delay is set to " + data[1] + "ms");
                 break;
         }

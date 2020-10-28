@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,9 +16,11 @@ public class HostCountrySelect : MonoBehaviour
     [HideInInspector]
     public ButtonHostCountrySelect SelectedPlayer2 = null;
 
+    public static HostCountrySelect Instance = null;
     // Start is called before the first frame update
     void Start()
     {
+        Instance = this;
         server = GameObject.Find("Server").GetComponent<PlayerHost>();
 
         int count = transform.childCount;
@@ -46,13 +49,29 @@ public class HostCountrySelect : MonoBehaviour
 
         ButtonSelectCountry.onClick.AddListener(() =>
         {
-            if(PlayerHost.MultiplayerSession.P1Country != null)
+            if(PlayerHost.MultiplayerSession.P1Country != null
+            && SelectedPlayer1 != null && SelectedPlayer1.gameObject.activeInHierarchy)
             {
                 PlayerHost.MultiplayerSession.P1Country = SelectedPlayer1.name;
+                server.Send("P1LOCKIN|" + SelectedPlayer1.name, true);
+                SelectedPlayer1.gameObject.SetActive(false);
                 ButtonSelectCountry.interactable = false;
                 ButtonSelectCountry.transform.GetChild(0).GetComponent<Text>().text = "WAITING FOR OTHER PLAYER";
             }
         });
+    }
+
+    public void LockInPlayer2()
+    {
+        if (PlayerHost.MultiplayerSession.P2Country != null
+            && SelectedPlayer2 != null && SelectedPlayer2.gameObject.activeInHierarchy)
+        {
+            PlayerHost.MultiplayerSession.P2Country = SelectedPlayer2.name;
+            server.Send("P2LOCKIN|" + SelectedPlayer2.name, true);
+            SelectedPlayer2.gameObject.SetActive(false);
+            //ButtonSelectCountry.interactable = false;
+            //ButtonSelectCountry.transform.GetChild(0).GetComponent<Text>().text = "WAITING FOR OTHER PLAYER";
+        }
     }
 
 
